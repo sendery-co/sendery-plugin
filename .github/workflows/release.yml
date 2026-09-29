@@ -1,0 +1,30 @@
+name: Release plugin
+on:
+  release:
+    types: [published]
+permissions:
+  contents: read
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check tag and package version
+        run: |
+          python - <<'PY'
+          import json, os
+          version = json.load(open('plugins/sendery/.codex-plugin/plugin.json'))['version']
+          assert os.environ['GITHUB_REF_NAME'] == 'v' + version, 'Release tag must match the plugin version'
+          PY
+      - run: python -m unittest discover -s tests
+      - run: python tools/build.py
+      - name: Attach installable bundles
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" dist/* --repo "$GITHUB_REPOSITORY"

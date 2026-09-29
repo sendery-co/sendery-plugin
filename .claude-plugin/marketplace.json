@@ -1,0 +1,17 @@
+{
+  "name": "sendery",
+  "owner": {
+    "name": "Sendery"
+  },
+  "metadata": {
+    "description": "Sendery email setup and migration tools."
+  },
+  "plugins": [
+    {
+      "name": "sendery",
+      "source": "./plugins/sendery",
+      "description": "Set up Sendery transactional emails, migrate existing templates, and preview editable drafts with your coding assistant.",
+      "category": "development"
+    }
+  ]
+}

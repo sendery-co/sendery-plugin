@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "sendery": {
+      "type": "http",
+      "url": "https://sendery.co/mcp"
+    }
+  }
+}

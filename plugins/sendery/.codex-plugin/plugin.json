@@ -1,0 +1,43 @@
+{
+  "name": "sendery",
+  "version": "0.1.0",
+  "description": "Set up Sendery transactional emails, migrate existing templates, and preview editable drafts with your coding assistant.",
+  "author": {
+    "name": "Sendery",
+    "url": "https://sendery.co"
+  },
+  "homepage": "https://sendery.co/en/docs",
+  "repository": "https://github.com/sendery-co/sendery-plugin",
+  "license": "MIT",
+  "keywords": [
+    "email",
+    "transactional-email",
+    "templates",
+    "migration",
+    "sendery"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Sendery",
+    "shortDescription": "Build and migrate transactional email templates.",
+    "longDescription": "Choose a framework integration, prepare email templates, and migrate existing emails into Sendery drafts. Connect one project, preview with sample data, and review drafts in the editor before publishing.",
+    "developerName": "Sendery",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://sendery.co",
+    "privacyPolicyURL": "https://sendery.co/en/privacy",
+    "termsOfServiceURL": "https://sendery.co/en/terms",
+    "defaultPrompt": [
+      "Help me set up Sendery for this application.",
+      "Inventory my transactional emails and migrate one example to Sendery.",
+      "Preview my email template with sample data."
+    ],
+    "brandColor": "#196B56",
+    "composerIcon": "./assets/icon.svg",
+    "logo": "./assets/logo.png"
+  }
+}

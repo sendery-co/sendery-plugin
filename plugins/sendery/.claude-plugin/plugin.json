@@ -1,0 +1,21 @@
+{
+  "name": "sendery",
+  "version": "0.1.0",
+  "description": "Set up Sendery transactional emails, migrate existing templates, and preview editable drafts with your coding assistant.",
+  "author": {
+    "name": "Sendery",
+    "url": "https://sendery.co"
+  },
+  "homepage": "https://sendery.co/en/docs",
+  "repository": "https://github.com/sendery-co/sendery-plugin",
+  "license": "MIT",
+  "keywords": [
+    "email",
+    "transactional-email",
+    "templates",
+    "migration",
+    "sendery"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}
