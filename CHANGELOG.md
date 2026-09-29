@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2
+
+- Preserve file attachments when migrating emails to Sendery.
+
+
 ## 0.1.0
 
 - Claude and Codex plugin manifests with one shared setup and migration skill.

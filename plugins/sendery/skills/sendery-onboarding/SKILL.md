@@ -54,7 +54,7 @@ The management API exposes the same operations for custom automation: https://se
 
 ## Updating application code
 
-Replace the sending paths within the requested scope. Preserve recipients, application authorization, queue behavior, locales, and business event semantics. Current Sendery sending supports one recipient; flag attachments, CC/BCC, and arbitrary raw-HTML sending instead of silently omitting them.
+Replace the sending paths within the requested scope. Preserve recipients, application authorization, queue behavior, locales, and business event semantics. Current Sendery sending supports one recipient and up to 10 attachments totaling 5 MB (5,242,880 bytes before base64). Preserve attachment generation and pass files with each send request via SDK helpers or native Laravel/Symfony/Django attachment methods. Attachments are temporary delivery files, never saved in email history; do not upload them as template assets. Flag oversized files, inline attachments, CC/BCC, and arbitrary raw-HTML sending instead of silently omitting them. Retry with identical attachment bytes and the same idempotency key.
 
 Keep the implementation small: use the supported SDK or framework adapter directly and preserve existing application conventions. Do not introduce provider abstractions, migration frameworks, or new queues when the existing integration handles the task.
 
