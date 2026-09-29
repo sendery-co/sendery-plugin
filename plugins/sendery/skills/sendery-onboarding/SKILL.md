@@ -31,7 +31,9 @@ Identify the actual product events requiring email. Where intent is unclear, pro
 
 Create an inventory: source file, triggering event, locale(s), subject, variables, repeating data, images, conditional branches, recipients, attachments, and proposed Sendery key. Mark unsupported features before changing sending code.
 
-Migrate one representative email for review first. Then process the approved set in small, resumable batches. Maintain a local manifest (for example `sendery-migration.json`) containing source paths, stable source IDs, source fingerprints, template IDs, keys, last saved revisions, review links, and unresolved differences. Store no tokens or real recipient data in this file.
+Follow the user's requested migration scope. If they have not chosen emails, summarize the inventory and ask which emails they want to migrate. You may suggest starting with one example for review, but do not select it yourself or make that a prerequisite. If the user requests several emails or all of them, proceed with that scope without asking again.
+
+For larger migrations, process small, resumable batches and maintain a lightweight local manifest (for example `sendery-migration.json`) containing source paths, stable source IDs, source fingerprints, template IDs, keys, last saved revisions, review links, and unresolved differences. For a small change, a simple mapping in the handoff is sufficient. Store no tokens or real recipient data in this mapping.
 
 Use a stable source ID such as `mail/order-confirmation`; do not generate a new UUID on every run. List existing templates first to avoid key collisions. For a successful save, record the returned template ID and revision immediately. After a timeout, repeat the identical import: the server recognizes a matching source and unchanged draft. If the server returns 409, read the current draft and reconcile the difference; do not blindly adopt a newer revision to overwrite human changes. Supply `expected_revision` for an intentional update.
 
@@ -52,12 +54,29 @@ The management API exposes the same operations for custom automation: https://se
 
 ## Updating application code
 
-Replace one approved sending path at a time. Preserve recipients, application authorization, queue behavior, locales, and business event semantics. Current Sendery sending supports one recipient; flag attachments, CC/BCC, and arbitrary raw-HTML sending instead of silently omitting them.
+Replace the sending paths within the requested scope. Preserve recipients, application authorization, queue behavior, locales, and business event semantics. Current Sendery sending supports one recipient; flag attachments, CC/BCC, and arbitrary raw-HTML sending instead of silently omitting them.
 
-Prepare changes on a reviewable branch or patch. A retry must reuse the original idempotency key and request data, including across durable job retries. Do not create a new send object/key on each queue attempt without preserving the original. Do not enable both the old and new sender for the same event. Keep a clear rollback path until the migrated email is validated.
+Keep the implementation small: use the supported SDK or framework adapter directly and preserve existing application conventions. Do not introduce provider abstractions, migration frameworks, or new queues when the existing integration handles the task.
+
+For migrated emails, Sendery replaces the old sender. Do not add Sendery on/off flags, dual-delivery paths, fallback senders, or logic that silently calls the old provider when configuration is missing or Sendery fails. Remove the obsolete rendering and sending code for those emails, along with configuration and dependencies that are no longer used. Leave unrelated emails outside the requested scope alone. Version control provides the rollback path; do not retain the old implementation as a runtime backup.
+
+A retry must reuse the original idempotency key and request data, including across durable job retries. Do not create a new send object/key on each queue attempt without preserving the original. Preserve normal error reporting and safe retries rather than swallowing delivery failures.
+
+## Configure sending credentials
+
+The assistant's OAuth connection only manages drafts; it does not configure authentication for the application's sending SDK. Early in setup, tell the user to create a sending key in their Sendery project's **API keys** page and add it to the application's ignored local environment file and deployment secret settings. Name the exact setting and location used by the chosen integration (typically `SENDERY_API_KEY`); use placeholders only in tracked example configuration. Never ask the user to paste the key into chat or commit it to the repository.
+
+If configuration already exists, reuse it and confirm presence without exposing its value. Otherwise explicitly ask the user to configure it; continue independent code and draft work while waiting. Missing credentials must produce a clear configuration error before attempting a send, not a silent skip or fallback. Test this behavior using mocks and synthetic credentials. Do not claim the integration is ready to send until credentials, published templates, and Sending Setup are confirmed; list anything still unverified.
 
 ## Completion and limits
 
-Report the chosen integration and compatibility, imported draft links, changed files and tests, unsupported features, and the remaining publish/cutover steps. Publishing, live test sends, modifying shared branding, and switching production delivery need explicit user authorization; this draft-only connection does not provide those tools. Use the editor to publish reviewed templates before enabling code that references them.
+Explain the chosen integration and intended changes before editing. Give concise progress updates during migration. At completion, provide a plain-language summary of:
+
+- Which emails were migrated, what now triggers them, and links to their drafts.
+- What changed in the codebase and which old sending/template code was removed.
+- Tests run, results, and any unverified behavior or unsupported features.
+- Exact remaining setup: where to set the API key, which templates to publish, and any Sending Setup or deployment steps.
+
+The Sendery connection only exposes draft, asset, and preview operations. Publishing, live sends, and shared brand changes are not available through its tools. Direct the user to review and publish templates in the editor before deploying code that sends them. Repository edits and deployment are separate capabilities governed by the user's request; do not treat draft-creation permission as permission to deploy or send real emails.
 
 Stop retrying persistent validation, permission, or billing errors and explain the blocker. Respect Retry-After and use bounded retries for temporary failures. Neither this skill nor connecting an MCP server grants repository access; use only the files and execution environment the customer has provided.

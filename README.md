@@ -62,7 +62,7 @@ Use either the plugin or a manual MCP/skill installation. If you previously conf
 
 ## Try it
 
-> Set up Sendery for this application. Inspect the framework and existing transactional emails. Recommend the right integration, then migrate one representative email into a draft for review. Validate it and preview it using sample data. Prepare code changes without switching production delivery.
+> Set up Sendery for this application. Inspect the framework and existing transactional emails, then recommend the simplest compatible integration. For a new app, prepare the templates we need. For an existing app, follow my requested migration scope; if I have not chosen emails, summarize them and ask which to migrate. You may suggest starting with one for review. Validate and preview the drafts with sample data. Replace the old sending paths for migrated emails without adding on/off flags or fallback senders. Guide me through adding the sending API key to my local environment and deployment secrets without sharing it in chat or committing it. Explain your changes, tests, draft links, and any remaining setup or publishing steps.
 
 For a new app, ask for the templates your product needs. For an existing app, the skill inventories its emails, preserves variables and application logic, and migrates in small batches. It records source IDs and revisions so rerunning does not create duplicates or overwrite newer edits.
 

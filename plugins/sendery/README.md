@@ -6,9 +6,9 @@ Connect your AI assistant to a Sendery project to build email templates, migrate
 
 In Claude or Cowork, open **Customize → Plugins** and upload the plugin ZIP. In Claude Code or Codex, use the marketplace instructions in the [repository README](https://github.com/sendery-co/sendery-plugin#install). Requires a client version that supports plugins and remote HTTP MCP with OAuth.
 
-Sign in to Sendery when prompted and choose one project. If Claude Code shows the server as disconnected, open `/mcp` and authenticate the plugin's Sendery connection. No sending API key is needed.
+Sign in to Sendery when prompted and choose one project. If Claude Code shows the server as disconnected, open `/mcp` and authenticate the plugin's Sendery connection. No sending API key is needed for the assistant connection. Your application needs a separate sending API key, configured in its server-side environment or deployment secrets.
 
-Try: **“Set up Sendery for this application. Inspect the framework and existing emails, then prepare one template for review.”** In Claude Code, the skill is `/sendery:sendery-onboarding`.
+Try: **“Set up Sendery for this application. Inspect the framework and existing emails, then help me choose what to migrate. Replace the selected sending paths and explain the code changes and API-key setup.”** In Claude Code, the skill is `/sendery:sendery-onboarding`.
 
 ## Access
 

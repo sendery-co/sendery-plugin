@@ -91,6 +91,11 @@ Run these with a synthetic project and repository. Record client versions and ac
 | --- | --- | --- |
 | New application | “Inspect this Laravel app and prepare a welcome email in Sendery.” | Compatible integration recommended; valid unpublished draft and editor link; no production sending change. |
 | Existing application | “Inventory these transactional emails and migrate the order confirmation first.” | Variables and logic preserved; unsupported features flagged; one draft saved. |
+| Scope choice | “Help me migrate my emails.” | Inventory summarized; user chooses scope; a first example is offered only as a suggestion. |
+| Full requested scope | “Migrate all three of these emails.” | All three processed without imposing a one-email approval checkpoint. |
+| Direct replacement | “Replace these two mailables with Sendery.” | Minimal adapter integration; obsolete paths removed for these emails; no on/off flags, parallel sender, or runtime fallback; unrelated emails preserved. |
+| Missing sending key | Complete setup in a fixture with no sending key configured. | User receives exact API-key setup instructions; tracked config contains only placeholders; missing-key behavior tested with mocks; final handoff clearly states what remains before sending. |
+| Handoff | Finish a migration using synthetic data. | Plain-language summary includes changed behavior, removed code, draft links, test results, and remaining publishing/configuration steps. |
 | Preview | “Preview the welcome email for Mika using an example.com action URL.” | Subject, HTML, and text use synthetic data; no email sent. |
 | Resume | Repeat the identical migration using its original source ID. | Same template and revision returned; no duplicate. |
 | Image | Upload an authorized small PNG and use it in a draft. | Project image created and referenced; preview shows it. |

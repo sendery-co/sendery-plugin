@@ -33,7 +33,7 @@
     "termsOfServiceURL": "https://sendery.co/en/terms",
     "defaultPrompt": [
       "Help me set up Sendery for this application.",
-      "Inventory my transactional emails and migrate one example to Sendery.",
+      "Inventory my transactional emails and help me choose what to migrate to Sendery.",
       "Preview my email template with sample data."
     ],
     "brandColor": "#196B56",
