@@ -10,6 +10,14 @@ Sign in to Sendery when prompted and choose one project. If Claude Code shows th
 
 Try: **“Set up Sendery for this application. Inspect the framework and existing emails, then help me choose what to migrate. Replace the selected sending paths and explain the code changes and API-key setup.”** In Claude Code, the skill is `/sendery:sendery-onboarding`.
 
+## Migrating existing emails
+
+Fetch `get_template_schema` for the current block format. Use block conditions for optional sections instead of duplicating templates: `present`, `absent`, `equals`, or `not_equals`. Test both branches with `preview_template` or Live Preview in the editor. Text links and buttons support `tel:` as well as HTTP(S) and `mailto:`.
+
+`batch_templates` validates, previews, or saves up to five drafts per request, with separate results for each item. Limit input to 1 MiB; previews also have a combined 1 MiB output limit. Successful saves remain saved if another item fails. Reuse stable source IDs when retrying and respect HTTP `Retry-After`.
+
+To migrate into an existing template, read it first and call `associate_template_source` with its ID, current `expected_revision`, and your `source_id`. This only associates the source; subsequent draft saves still require the current revision. It never publishes or takes over a template already associated with a different source.
+
 ## Access
 
 The plugin can read project branding and templates, upload images, save drafts, and preview with sample data. It cannot publish, send email, change shared branding, or read billing or retained customer emails. Review and publish drafts in Sendery.
