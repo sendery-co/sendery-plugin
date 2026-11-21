@@ -1,6 +1,6 @@
 ---
 name: sendery-onboarding
-description: Set up Sendery transactional emails in a new application or migrate existing email templates into editable Sendery drafts. Inspect framework compatibility, map template variables, prepare code changes, and validate previews using the Sendery MCP tools or management API.
+description: Set up Sendery transactional emails in a new application or migrate existing email templates into editable Sendery drafts. Connect application events and create trigger flows with associated email drafts, inspect framework compatibility, map template variables, and validate previews using the Sendery MCP tools or management API.
 license: MIT
 ---
 
@@ -22,6 +22,28 @@ Choose a compatible integration from https://sendery.co/en/docs and check its cu
 - Use the HTTP API when the SDK is incompatible or the user prefers it. Never upgrade their framework just to install an adapter.
 
 Sending SDKs accept template keys and data. They do not automatically convert arbitrary existing HTML mailables. The Laravel adapter has hooks for standard password-reset and verification notifications; inspect the app's customizations before using them. Keep API credentials on the server and out of repository files, client bundles, and conversation output.
+
+## Connecting app events
+
+For event setup, read `get_project`, `get_event_schema`, and `list_event_types`. Inspect the app’s models, business actions, and existing events. Follow the requested scope; if none is specified, suggest relevant events and ask which to connect. Event setup does not imply migrating existing email sending.
+
+Use `define_event_type` to register readable labels, typed fields, recipient roles, and synthetic examples. Related events must use the same object type and stable record ID. Definitions are saved immediately; updates require `expected_revision` from the list result. A 409 means re-read and reconcile instead of overwriting. Breaking definition changes stop affected published triggers until the user reviews them.
+
+Call `validate_event` with synthetic event payloads. This reuses the Event API’s validation but does not store an event, verify the connection, or run triggers. Do not mistake validation for an end-to-end connection test. The application must send an actual event through the SDK/API before the connection is verified. Check `get_project.delivery_mode` and perform that test only in Sandbox unless live activity is explicitly authorized.
+
+Add the compatible SDK to the app and emit the chosen events after successful business changes. Reuse existing queue/transaction conventions and preserve idempotency keys across retries. Ask the user to configure the server-side project API key as described below. Keep payloads limited to the fields the flow needs, not whole model dumps. For requested email flows, continue with the trigger draft workflow below; otherwise return the Triggers link.
+
+If an event or trigger tool reports missing permission, reconnect and approve app event and trigger draft access for the project. OAuth refresh does not grant this new permission to an older connection. Never use another project’s credentials to work around it.
+
+## Creating trigger flows and their emails
+
+For a requested automation, read `get_trigger_schema`, `list_event_types`, `list_templates`, and `list_triggers`. Use the requested events, recipients, timing, and conditions. Ask only when a missing choice materially changes who receives an email or when.
+
+Create the associated email drafts using the template workflow below, then reference their returned keys in the flow. Use stable UUIDs for steps: `parent: null` attaches to the event; sibling conditions create independent branches. All matching branches run. Connect variables to event field keys and recipient aliases from the schema; do not invent JSON paths or silently leave required data unconnected. Delayed emails use the original event data and the newest published template when queued.
+
+Call `validate_trigger`, then `save_trigger_draft`. A valid draft may still have `publish_errors`, such as an unverified event or unpublished email. Explain those remaining steps. The server enforces the builder’s graph, timing, mapping, and project rules; do not recreate a separate validator in the customer’s app.
+
+For updates, read `get_trigger` and pass its `id` and `expected_revision`. Keep the starting event unchanged. After a timeout, list/get the draft by its unique project name before retrying creation. Reconcile conflicts with the user’s changes, rather than overwriting a newer revision. Saving never publishes or changes the running version. Return both trigger and email editor links so the user can review and publish them in Sendery.
 
 ## New applications
 
@@ -64,7 +86,7 @@ A retry must reuse the original idempotency key and request data, including acro
 
 ## Configure sending credentials
 
-The assistant's OAuth connection only manages drafts; it does not configure authentication for the application's sending SDK. Early in setup, tell the user to create a sending key in their Sendery project's **API keys** page and add it to the application's ignored local environment file and deployment secret settings. Name the exact setting and location used by the chosen integration (typically `SENDERY_API_KEY`); use placeholders only in tracked example configuration. Never ask the user to paste the key into chat or commit it to the repository.
+The assistant's OAuth connection manages email/trigger drafts and app event definitions; it does not configure authentication for the application's sending SDK. Early in setup, tell the user to create a sending key in their Sendery project's **API keys** page and add it to the application's ignored local environment file and deployment secret settings. Name the exact setting and location used by the chosen integration (typically `SENDERY_API_KEY`); use placeholders only in tracked example configuration. Never ask the user to paste the key into chat or commit it to the repository.
 
 If configuration already exists, reuse it and confirm presence without exposing its value. Otherwise explicitly ask the user to configure it; continue independent code and draft work while waiting. Missing credentials must produce a clear configuration error before attempting a send, not a silent skip or fallback. Test this behavior using mocks and synthetic credentials. Do not claim the integration is ready to send until credentials, published templates, and Sending Setup are confirmed; list anything still unverified.
 
@@ -72,11 +94,11 @@ If configuration already exists, reuse it and confirm presence without exposing 
 
 Explain the chosen integration and intended changes before editing. Give concise progress updates during migration. At completion, provide a plain-language summary of:
 
-- Which emails were migrated, what now triggers them, and links to their drafts.
+- Which emails and flows were created or changed, what triggers them, and links to their editors.
 - What changed in the codebase and which old sending/template code was removed.
 - Tests run, results, and any unverified behavior or unsupported features.
 - Exact remaining setup: where to set the API key, which templates to publish, and any Sending Setup or deployment steps.
 
-The Sendery connection only exposes draft, asset, and preview operations. Publishing, live sends, and shared brand changes are not available through its tools. Direct the user to review and publish templates in the editor before deploying code that sends them. Repository edits and deployment are separate capabilities governed by the user's request; do not treat draft-creation permission as permission to deploy or send real emails.
+The Sendery connection exposes email/trigger draft, asset, preview, and app-event setup operations. Event tools can register definitions and validate synthetic payloads; they cannot ingest events or read stored customer event data. Publishing, live sends, and shared brand changes are not available through its tools. Direct the user to review and publish the emails and flows in Sendery before enabling their application integration. Repository edits and deployment are separate capabilities governed by the user's request; do not treat draft-creation permission as permission to deploy or send real emails.
 
 Stop retrying persistent validation, permission, or billing errors and explain the blocker. Respect Retry-After and use bounded retries for temporary failures. Neither this skill nor connecting an MCP server grants repository access; use only the files and execution environment the customer has provided.

@@ -5,6 +5,7 @@ Create or migrate transactional emails with your AI assistant. Preview them in S
 - Turn existing emails into editable templates.
 - Adjust copy, design, and translations with your assistant.
 - Connect your app with the Sendery SDK or framework integration that fits it.
+- Connect app events and prepare trigger flows with their email templates.
 
 ## Get started
 
@@ -61,6 +62,12 @@ Name the emails you want to create or migrate, and include any branding or langu
 
 You can start with one email or migrate them all. See [Migrate transactional emails to Sendery with AI](https://sendery.co/en/docs/ai-migration) for a walkthrough.
 
+## Connect app events
+
+Open **Triggers → App connection → Set up with MCP** in Sendery. Connect your assistant to the project, then use the event setup prompt to inspect your app and choose which events to connect.
+
+The assistant can register app events, validate sample payloads, and prepare trigger flows with their email drafts, timing, and conditions. It returns editor links for review and publication in Sendery. Configure the project API key in your app’s server environment and test the connection in Sandbox. Existing assistant connections need to reconnect to approve app event and trigger draft access.
+
 ## Preview, publish, and send
 
 Your assistant prepares editable drafts with sample data. Open **AI Setup** in your Sendery project to review them, or ask for changes to the copy and design.
@@ -71,7 +78,7 @@ Your team can then update the templates in Sendery without editing application c
 
 ## Your control
 
-The Sendery connection can edit drafts and generate previews. It cannot publish templates, send emails, or access billing or saved email content. Disconnect it from **AI Setup → Connected assistants** at any time.
+The Sendery connection can edit email and trigger drafts, generate email previews, register app event definitions, and validate sample events. It cannot publish templates or triggers, send emails, or access billing or saved email content. Disconnect it from **AI Setup → Connected assistants** at any time.
 
 [Documentation](https://sendery.co/en/docs) · [Support](https://sendery.co/en/contact) · [Privacy](https://sendery.co/en/privacy) · [Terms](https://sendery.co/en/terms)
 
