@@ -36,7 +36,6 @@ Run these commands in your terminal, then sign in to Sendery in the browser and 
 
 ```sh
 codex mcp add sendery --url https://sendery.co/mcp
-codex mcp login sendery
 ```
 
 Add the Sendery skill from your repository root:
