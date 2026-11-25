@@ -21,6 +21,8 @@ Choose a compatible integration from https://sendery.co/en/docs and check its cu
 - Go: `github.com/sendery-co/sendery-go`.
 - Use the HTTP API when the SDK is incompatible or the user prefers it. Never upgrade their framework just to install an adapter.
 
+Laravel: use `MAIL_MAILER=sendery`, `Mail::to(...)->send(new TemplateMail(...))`, and the normal `mail` notification channel. `useBuiltInNotifications()` returns Sendery template mailables through that channel. Respect `MAIL_MAILER`, Symfony `MAILER_DSN`, and Django `EMAIL_BACKEND`; never bypass the selected mail transport with a direct API call for a notification. Alternate transports render the published template through the bounded render API, and render failures must stop delivery.
+
 Sending SDKs accept template keys and data. They do not automatically convert arbitrary existing HTML mailables. The Laravel adapter has hooks for standard password-reset and verification notifications; inspect the app's customizations before using them. Keep API credentials on the server and out of repository files, client bundles, and conversation output.
 
 ## Connecting app events
@@ -86,7 +88,7 @@ A retry must reuse the original idempotency key and request data, including acro
 
 ## Configure sending credentials
 
-The assistant's OAuth connection manages email/workflow drafts and app event definitions; it does not configure authentication for the application's sending SDK. Early in setup, tell the user to create a sending key in their Sendery project's **API keys** page and add it to the application's ignored local environment file and deployment secret settings. Name the exact setting and location used by the chosen integration (typically `SENDERY_API_KEY`); use placeholders only in tracked example configuration. Never ask the user to paste the key into chat or commit it to the repository.
+The assistant's OAuth connection manages email/workflow drafts and app event definitions; it does not configure authentication for the application's sending SDK. Early in setup, tell the user to create a sending key in their Sendery project's **API keys** page and add it to the application's ignored local environment file and deployment secret settings. Use Sandbox keys for local/staging API calls, including events; Sendery enforces no delivery even on live projects. Live keys follow the project sending mode. Event-definition changes on a live project require a Live key, so test schema changes in a separate sandbox project. Direct SDK/event calls are independent of framework mailer settings. SMTP can deliver on its own, so select a test SMTP destination when developing. Name the exact setting and location used by the chosen integration (typically `SENDERY_API_KEY`); use placeholders only in tracked example configuration. Never ask the user to paste the key into chat or commit it to the repository.
 
 If configuration already exists, reuse it and confirm presence without exposing its value. Otherwise explicitly ask the user to configure it; continue independent code and draft work while waiting. Missing credentials must produce a clear configuration error before attempting a send, not a silent skip or fallback. Test this behavior using mocks and synthetic credentials. Do not claim the integration is ready to send until credentials, published templates, and Sending Setup are confirmed; list anything still unverified.
 
