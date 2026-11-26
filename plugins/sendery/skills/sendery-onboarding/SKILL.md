@@ -29,7 +29,9 @@ Sending SDKs accept template keys and data. They do not automatically convert ar
 
 For event setup, read `get_project`, `get_event_schema`, and `list_event_types`. Inspect the app’s models, business actions, and existing events. Follow the requested scope; if none is specified, suggest relevant events and ask which to connect. Event setup does not imply migrating existing email sending.
 
-Use `define_event_type` to register readable labels, typed fields, recipient roles, and synthetic examples. Related events must use the same object type and stable record ID. Definitions are saved immediately; updates require `expected_revision` from the list result. A 409 means re-read and reconcile instead of overwriting. Breaking definition changes stop affected published workflows until the user reviews them.
+Use `define_event_type` to register readable labels, typed fields, recipient roles, and synthetic examples. Fill in `description` with when the event fires, in at most 150 characters. Related events must use the same object type and stable record ID. Definitions are saved immediately; updates require `expected_revision` from the list result. A 409 means re-read and reconcile instead of overwriting. Breaking definition changes stop affected published workflows until the user reviews them.
+
+Use `update_event_type` with the latest `expected_revision` to edit only an event's display `label` or `description`. Its stable event name, data mappings, and verification stay unchanged.
 
 When asked to remove an event definition, use `delete_event_type` with its latest `expected_revision` from `list_event_types`. Workflow drafts, published workflows, and unfinished runs must no longer reference it. Previously received events are preserved.
 
@@ -45,9 +47,11 @@ For a requested automation, read `get_workflow_schema`, `list_event_types`, `lis
 
 Create the associated email drafts using the template workflow below, then reference their returned keys in the flow. Use stable UUIDs for steps: `parent: null` attaches to the event; sibling conditions create independent branches. All matching branches run. Connect variables to event field keys and recipient aliases from the schema; do not invent JSON paths or silently leave required data unconnected. Delayed emails use the original event data and the newest published template when queued.
 
-Call `validate_workflow`, then `save_workflow_draft`. A valid draft may still have `publish_errors`, such as an unpublished email or missing data connection. Explain those remaining steps. Registered events do not need to have arrived before testing or publishing a flow. Users can run Test flow with example data in the builder; it stays sandboxed even on live projects and does not verify the app connection. The server enforces the builder’s graph, timing, mapping, and project rules; do not recreate a separate validator in the customer’s app.
+Call `validate_workflow`, then `save_workflow_draft`. Include an optional `description` (up to 500 characters) explaining what the workflow does. A valid draft may still have `publish_errors`, such as an unpublished email or missing data connection. Explain those remaining steps. Registered events do not need to have arrived before testing or publishing a flow. Users can run Test flow with example data in the builder; it stays sandboxed even on live projects and does not verify the app connection. The server enforces the builder’s graph, timing, mapping, and project rules; do not recreate a separate validator in the customer’s app.
 
 For updates, read `get_workflow` and pass its `id` and `expected_revision`. Keep the starting event unchanged. After a timeout, list/get the draft by its unique project name before retrying creation. Reconcile conflicts with the user’s changes, rather than overwriting a newer revision. Saving never publishes or changes the running version. Return both workflow and email editor links so the user can review and publish them in Sendery.
+
+When asked to remove an unpublished workflow or email template, use `delete_workflow_draft` or `delete_template_draft` with its latest `expected_revision` from the corresponding get tool. Published items cannot be deleted through this connection. Unlink templates from workflows before deleting them; deleted template keys and import source IDs remain reserved.
 
 ## New applications
 
