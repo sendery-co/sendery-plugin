@@ -31,6 +31,8 @@ For event setup, read `get_project`, `get_event_schema`, and `list_event_types`.
 
 Use `define_event_type` to register readable labels, typed fields, recipient roles, and synthetic examples. Related events must use the same object type and stable record ID. Definitions are saved immediately; updates require `expected_revision` from the list result. A 409 means re-read and reconcile instead of overwriting. Breaking definition changes stop affected published workflows until the user reviews them.
 
+When asked to remove an event definition, use `delete_event_type` with its latest `expected_revision` from `list_event_types`. Workflow drafts, published workflows, and unfinished runs must no longer reference it. Previously received events are preserved.
+
 Call `validate_event` with synthetic event payloads. This reuses the Event API’s validation but does not store an event, verify the connection, or run workflows. Do not mistake validation for an end-to-end connection test. The application must send an actual event through the SDK/API before the connection is verified. Check `get_project.delivery_mode` and perform that test only in Sandbox unless live activity is explicitly authorized.
 
 Add the compatible SDK to the app and emit the chosen events after successful business changes. Reuse existing queue/transaction conventions and preserve idempotency keys across retries. Ask the user to configure the server-side project API key as described below. Keep payloads limited to the fields the flow needs, not whole model dumps. For requested email flows, continue with the workflow draft workflow below; otherwise return the Workflows link.
